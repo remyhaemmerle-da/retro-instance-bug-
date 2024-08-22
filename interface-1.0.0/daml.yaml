@@ -1,0 +1,11 @@
+sdk-version: 0.0.0
+name: interface
+version: 1.0.0
+source: Interface.daml
+dependencies:
+- daml-prim
+- daml-stdlib
+data-dependencies:
+- ../template-1.0.0/.daml/dist/template-1.0.0.dar
+build-options:
+- --target=1.15

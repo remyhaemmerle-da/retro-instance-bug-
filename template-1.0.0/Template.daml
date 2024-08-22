@@ -1,0 +1,26 @@
+-- Copyright (c) 2024 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
+-- SPDX-License-Identifier: Apache-2.0
+
+
+module Template where
+
+template T with
+    p : Party
+    q : Party
+  where
+    signatory [p, q]
+
+
+template P with
+    p : Party
+    q : Party
+  where
+    signatory p
+    observer q
+
+    choice Accept: ContractId T where
+      controller q
+      do
+        create (T p q)
+
+

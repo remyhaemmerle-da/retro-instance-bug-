@@ -1,0 +1,36 @@
+module Test where
+
+import Template
+import Interface
+
+import DA.Time
+
+import Daml.Script
+
+waitFor : (Template a, HasAgreement a) => Party -> ContractId a -> Int -> Script ()
+waitFor _ _ 0 = error ("give up ")
+waitFor p cid n =
+  do
+    mbCid <- queryContractId p cid
+    case mbCid of
+     None -> do
+       sleep (seconds 1)
+       waitFor p cid (n -1)
+     Some _ -> pure ()
+
+setup = script do
+-- user_setup_begin
+  alice <- allocatePartyOn "alice" (ParticipantName "participant1")
+  bob <- allocatePartyOn "bob" (ParticipantName "participant2")
+-- user_setup_end
+  cid <- submit alice do
+    createCmd (P alice bob)
+  waitFor bob cid 10
+  cid <- submit bob do
+    exerciseCmd cid (Accept)
+  waitFor alice cid 10
+  _ <- submit alice do
+    exerciseCmd (toInterfaceContractId @I cid) (Noop alice)
+  pure cid
+
+
