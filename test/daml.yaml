@@ -5,6 +5,7 @@ source: Test.daml
 
 parties:
 - Alice
+- Bob
 dependencies:
 - daml-prim
 - daml-stdlib

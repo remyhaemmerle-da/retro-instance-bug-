@@ -18,19 +18,39 @@ waitFor p cid n =
        waitFor p cid (n -1)
      Some _ -> pure ()
 
-setup = script do
+setup1 = script do
 -- user_setup_begin
-  alice <- allocatePartyOn "alice" (ParticipantName "participant1")
+  alice <- allocateParty "alice"
+--  aliceId <- validateUserId "Alice"
+--  createUser (User aliceId (Some alice)) [CanActAs alice]
+  pure alice
+
+setup2:  Party -> Script (Party, Party)
+setup2 alice = script do
   bob <- allocatePartyOn "bob" (ParticipantName "participant2")
+--  bobId <- validateUserId "Bob"
+--  createUserOn (User bobId (Some bob)) [CanActAs bob] (ParticipantName "participant1")
+  pure (alice, bob)
+
+proposal1:  (Party, Party) -> Script (ContractId P, Party, Party)
+proposal1 (alice, bob) = script do
 -- user_setup_end
   cid <- submit alice do
     createCmd (P alice bob)
-  waitFor bob cid 10
-  cid <- submit bob do
-    exerciseCmd cid (Accept)
-  waitFor alice cid 10
-  _ <- submit alice do
+  pure (cid, alice, bob)
+
+accept2 : (ContractId P, Party, Party) -> Script (ContractId T, Party, Party)
+accept2 (cid, alice, bob) = script do
+  cid <- submit bob do exerciseCmd cid (Accept)
+  pure (cid, alice, bob)
+
+bug2 : (ContractId T, Party, Party) -> Script ()
+bug2 (cid, alice, bob) = script do
+  submit alice do
     exerciseCmd (toInterfaceContractId @I cid) (Noop alice)
-  pure cid
+
+  -- waitFor alice cid 10
+  -- _ <-
+  -- pure cid
 
 
