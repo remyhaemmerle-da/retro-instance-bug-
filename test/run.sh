@@ -1,6 +1,7 @@
 #!/bin/bash
 set -xe
 
+# need multidar support (i.e. 2.9 or above)
 # we assume canton is started with ../canton.conf
 
 daml build
