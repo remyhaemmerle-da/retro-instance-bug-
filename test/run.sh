@@ -1,6 +1,7 @@
 #!/bin/bash
 set -xe
 
+# we assume canton is started with ../canton.conf
 
 daml ledger  upload-dar --host localhost --port 12011
 daml ledger  upload-dar --host localhost --port 12021
